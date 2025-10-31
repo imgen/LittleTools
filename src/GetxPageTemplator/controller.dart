@@ -4,7 +4,7 @@ import '/base/base_controller.dart';
 class {PageName}Controller extends BaseController {
   final {PageName}Provider _provider;
 
-  NewPostController(this._provider) : super(_provider);
+  {PageName}Controller(this._provider) : super(_provider);
 
   @override
   void onInit() {

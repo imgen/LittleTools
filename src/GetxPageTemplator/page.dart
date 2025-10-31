@@ -5,16 +5,16 @@ import '/services/theme_service.dart';
 import '/base/base_appbar_view.dart';
 import '{page_name}_controller.dart';
 
-class {page_name}Page extends BaseAppBarView<XxxController> {
+class {PageName}Page extends BaseAppBarView<{PageName}Controller> {
   final themeService = Get.find<ThemeService>();
 
-  {page_name}Page({super.key});
+  {PageName}Page({super.key});
 
   @override
   Widget body(BuildContext context) {
-    
+    return Text("{PageTitle}");
   }
 
   @override
-  String get title => "{page_title}";
+  String get title => "{PageTitle}";
 }
