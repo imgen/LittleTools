@@ -5,15 +5,17 @@ var files = Directory.GetFiles(currentDirectory, "*.*", SearchOption.TopDirector
 const char separator = '.';
 var creoFileGroups = files.Select(filePath =>
 {
-    var fileName = Path.GetFileNameWithoutExtension(filePath);
     var parts = filePath.Split(separator);
     var lastPart = parts[^1];
-    if (fileName != "trail.txt" && int.TryParse(lastPart, out int revisionId))
+    var secondLastPart = parts[^2];
+    var isPartOfAssembly = secondLastPart == "prt" || secondLastPart == "asm";
+    if (isPartOfAssembly && int.TryParse(lastPart, out int revisionId))
     {
         var partsWithoutRevisionId = parts.Take(parts.Length - 1);
         var fileNameWithoutRevisionId = string.Join(separator, partsWithoutRevisionId);
         return new CreoFileEntry(fileNameWithoutRevisionId, filePath, revisionId);
     }
+    // When it's not .exe (.exe might be useful), delete it
     if (!lastPart.Equals("exe", StringComparison.InvariantCultureIgnoreCase))
     {
         File.Delete(filePath);
