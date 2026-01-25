@@ -5,13 +5,18 @@ var files = Directory.GetFiles(currentDirectory, "*.*", SearchOption.TopDirector
 const char separator = '.';
 var creoFileGroups = files.Select(filePath =>
 {
+    var fileName = Path.GetFileNameWithoutExtension(filePath);
     var parts = filePath.Split(separator);
     var lastPart = parts[^1];
-    if (int.TryParse(lastPart, out int revisionId))
+    if (fileName != "trail.txt" && int.TryParse(lastPart, out int revisionId))
     {
         var partsWithoutRevisionId = parts.Take(parts.Length - 1);
         var fileNameWithoutRevisionId = string.Join(separator, partsWithoutRevisionId);
         return new CreoFileEntry(fileNameWithoutRevisionId, filePath, revisionId);
+    }
+    if (!lastPart.Equals("exe", StringComparison.InvariantCultureIgnoreCase))
+    {
+        File.Delete(filePath);
     }
     return new (filePath, filePath, -1);
 }).Where(x => x.RevisionId >= 0)
