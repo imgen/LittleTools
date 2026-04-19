@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="CreoFileCleaner/CreoFileCleaner.csproj" />
+  <Project Path="GetxPageTemplator/GetxPageTemplator.csproj" />
+  <Project Path="NugetPackagesCleaner/NugetPackagesCleaner.csproj" />
+  <Project Path="SimpleTemple/SimpleTemple.csproj" />
+  <Project Path="WpsPoolCleaner/WpsPoolCleaner.csproj" />
+</Solution>
