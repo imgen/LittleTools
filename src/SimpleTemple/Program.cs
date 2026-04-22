@@ -7,7 +7,7 @@ string[] ignoreTextReplaceFiles = ["confy.db"];
 await Parser.Default.ParseArguments<Options>(args)
     .WithParsedAsync(async options =>
     {
-        IEnumerable<string> commonReplacers = options.CommonReplacers;
+        string[] commonReplacers = options.CommonReplacers.ToArray();
         string sourceDir = options.SourceDir;
         string generateToDir = options.GenerateToDir;
         // Clean up the dir first
