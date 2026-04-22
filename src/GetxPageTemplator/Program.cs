@@ -2,10 +2,10 @@
 using GetxPageTemplator;
 
 await Parser.Default.ParseArguments<Options>(args)
-    .WithParsedAsync(async o =>
+    .WithParsedAsync(async options =>
     {
-        var pageName = o.PageName;
-        var pageTitle = o.PageTitle;
+        var pageName = options.PageName;
+        var pageTitle = options.PageTitle;
 
         var pageNameWords = pageName.Split('_');
         var pascalCasePageName = pageNameWords.Aggregate("", (current, pageNameWord) => 
