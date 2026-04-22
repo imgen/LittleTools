@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using SimpleTemple;
+
 string[] ignoreDirs = [".vs", ".idea", "Logs", "bin", "obj", "TestResults"];
 string[] ignoreFiles = [".editorconfig", ".env"];
 string[] ignoreTextReplaceFiles = ["confy.db"];
@@ -34,116 +35,115 @@ await Parser.Default.ParseArguments<Options>(args)
             ToFromToPairs(fileNameReplacers),
             ToFromToPairs(textReplacers)
         );
-        
-        return;
-
-        static FromToPair[] ToFromToPairs(IEnumerable<string> replacers) =>
-            replacers.Select(ParseReplacer)
-                .DistinctBy(x => x.From)
-                .OrderByDescending(x => x.From)
-                .ToArray();
-        
-        void ReplaceDirName(string rootDir, FromToPair[] fromToPairs)
-        {
-            string[] subDirs = Directory.GetDirectories(rootDir, "*", SearchOption.TopDirectoryOnly);
-            List<string> updatedSubDirs = [];
-            foreach (string subDir in subDirs)
-            {
-                DirectoryInfo dirInfo = new (subDir);
-                if (ignoreDirs.Contains(dirInfo.Name))
-                {
-                    continue;
-                }
-                string updatedDir = dirInfo.FullName;
-                foreach ((string from, string to) in fromToPairs)
-                {
-                    if (!dirInfo.Name.Contains(from))
-                    {
-                        continue;
-                    }
-
-                    string newDirName = dirInfo.Name.Replace(from, to);
-                    string newDirFullName = Path.Combine(dirInfo.Parent!.FullName, newDirName);
-                    Directory.Move(dirInfo.FullName, newDirFullName);
-                    updatedDir = newDirFullName;
-                    break;
-                }
-                
-                updatedSubDirs.Add(updatedDir);
-            }
-
-            foreach (string subDir in updatedSubDirs)
-            {
-                ReplaceDirName(subDir, fromToPairs);
-            }
-        }
-
-        async Task ReplaceFileNameAndTextAsync(string rootDir,
-            FromToPair[] fileNameReplacerFromToPairs,
-            FromToPair[] textReplacerFromToPairs)
-        {
-            if (ignoreDirs.Contains(rootDir))
-            {
-                return;
-            }
-            
-            string[] files = Directory.GetFiles(rootDir, "*", SearchOption.TopDirectoryOnly);
-
-            foreach (string filePath in files)
-            {
-                string fileName = Path.GetFileName(filePath);
-                if (ignoreFiles.Contains(fileName))
-                {
-                    continue;
-                }
-                
-                await ReplaceTextAsync(filePath, textReplacerFromToPairs);
-
-                foreach ((string from, string to) in fileNameReplacerFromToPairs)
-                {
-                    if (!fileName.Contains(from))
-                    {
-                        continue;
-                    }
-
-                    string newFileName = fileName.Replace(from, to);
-                    string newFilePath =  Path.Combine(rootDir, newFileName);
-                    File.Move(filePath, newFilePath);
-                    break;
-                }
-            }
-            
-            string[] subDirs = Directory.GetDirectories(rootDir, "*", SearchOption.TopDirectoryOnly);
-
-            foreach (string subDir in subDirs)
-            {
-                await ReplaceFileNameAndTextAsync(subDir, fileNameReplacerFromToPairs, textReplacerFromToPairs);
-            }
-        }
-
-        static FromToPair ParseReplacer(string replacer)
-        {
-            string[] parts = replacer.Split('=', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-            return new FromToPair(parts[0], parts[1]);
-        }
-
-        async Task ReplaceTextAsync(string filePath, FromToPair[] fromToPairs)
-        {
-            string fileName = Path.GetFileName(filePath);
-            if (ignoreTextReplaceFiles.Contains(fileName))
-            {
-                return;
-            }
-            
-            string allText = await File.ReadAllTextAsync(filePath);
-            foreach ((string from, string to) in fromToPairs)
-            {
-                allText = allText.Replace(from, to);
-            }
-            
-            await File.WriteAllTextAsync(filePath, allText);
-        }
     });
+return;
+
+void ReplaceDirName(string rootDir, FromToPair[] fromToPairs)
+{
+    string[] subDirs = Directory.GetDirectories(rootDir, "*", SearchOption.TopDirectoryOnly);
+    List<string> updatedSubDirs = [];
+    foreach (string subDir in subDirs)
+    {
+        DirectoryInfo dirInfo = new (subDir);
+        if (ignoreDirs.Contains(dirInfo.Name))
+        {
+            continue;
+        }
+        string updatedDir = dirInfo.FullName;
+        foreach ((string from, string to) in fromToPairs)
+        {
+            if (!dirInfo.Name.Contains(from))
+            {
+                continue;
+            }
+
+            string newDirName = dirInfo.Name.Replace(from, to);
+            string newDirFullName = Path.Combine(dirInfo.Parent!.FullName, newDirName);
+            Directory.Move(dirInfo.FullName, newDirFullName);
+            updatedDir = newDirFullName;
+            break;
+        }
+        
+        updatedSubDirs.Add(updatedDir);
+    }
+
+    foreach (string subDir in updatedSubDirs)
+    {
+        ReplaceDirName(subDir, fromToPairs);
+    }
+}
+
+async Task ReplaceFileNameAndTextAsync(string rootDir,
+    FromToPair[] fileNameReplacerFromToPairs,
+    FromToPair[] textReplacerFromToPairs)
+{
+    if (ignoreDirs.Contains(rootDir))
+    {
+        return;
+    }
+    
+    string[] files = Directory.GetFiles(rootDir, "*", SearchOption.TopDirectoryOnly);
+
+    foreach (string filePath in files)
+    {
+        string fileName = Path.GetFileName(filePath);
+        if (ignoreFiles.Contains(fileName))
+        {
+            continue;
+        }
+        
+        await ReplaceTextAsync(filePath, textReplacerFromToPairs);
+
+        foreach ((string from, string to) in fileNameReplacerFromToPairs)
+        {
+            if (!fileName.Contains(from))
+            {
+                continue;
+            }
+
+            string newFileName = fileName.Replace(from, to);
+            string newFilePath =  Path.Combine(rootDir, newFileName);
+            File.Move(filePath, newFilePath);
+            break;
+        }
+    }
+    
+    string[] subDirs = Directory.GetDirectories(rootDir, "*", SearchOption.TopDirectoryOnly);
+
+    foreach (string subDir in subDirs)
+    {
+        await ReplaceFileNameAndTextAsync(subDir, fileNameReplacerFromToPairs, textReplacerFromToPairs);
+    }
+}
+
+async Task ReplaceTextAsync(string filePath, FromToPair[] fromToPairs)
+{
+    string fileName = Path.GetFileName(filePath);
+    if (ignoreTextReplaceFiles.Contains(fileName))
+    {
+        return;
+    }
+    
+    string allText = await File.ReadAllTextAsync(filePath);
+    foreach ((string from, string to) in fromToPairs)
+    {
+        allText = allText.Replace(from, to);
+    }
+    
+    await File.WriteAllTextAsync(filePath, allText);
+}
+
+static FromToPair ParseReplacer(string replacer)
+{
+    string[] parts = replacer.Split('=', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+    return new FromToPair(parts[0], parts[1]);
+}
+
+static FromToPair[] ToFromToPairs(IEnumerable<string> replacers) =>
+    replacers.Select(ParseReplacer)
+        .DistinctBy(x => x.From)
+        .OrderByDescending(x => x.From)
+        .ToArray();
 
 static void CopyDirectory(string sourceDir, string destinationDir, bool recursive, string[]? ignoreDirs = null)
 {
