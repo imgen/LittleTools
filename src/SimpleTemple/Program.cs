@@ -18,24 +18,24 @@ if (File.Exists(templeJsonFilePath))
     CleanUp(generateToDir);
     CopyDirectory(sourceDir, generateToDir, recursive: true, ignoreDirs);
 
-    var commonReplacers = jsonOptions.CommonReplacers;
-    IEnumerable<Replacer> dirNameReplacers = commonReplacers
-            .Concat(jsonOptions.DirNameReplacers);
+    var commonReplacements = jsonOptions.CommonReplacements;
+    IEnumerable<Replacement> dirNameReplacements = commonReplacements
+            .Concat(jsonOptions.DirNameReplacements);
 
-    ReplaceDirName(generateToDir, ProcessReplacers(dirNameReplacers));
+    ReplaceDirName(generateToDir, ProcessReplacements(dirNameReplacements));
 
-    IEnumerable<Replacer> fileNameReplacers = commonReplacers
-            .Concat(jsonOptions.FileNameReplacers)
+    IEnumerable<Replacement> fileNameReplacements = commonReplacements
+            .Concat(jsonOptions.FileNameReplacements)
             .Distinct();
 
-    IEnumerable<Replacer> textReplacers = commonReplacers
-                 .Concat(jsonOptions.TextReplacers)
+    IEnumerable<Replacement> textReplacements = commonReplacements
+                 .Concat(jsonOptions.TextReplacements)
                  .Distinct();
 
     await ReplaceFileNameAndTextAsync(
         generateToDir,
-        ProcessReplacers(fileNameReplacers),
-        ProcessReplacers(textReplacers)
+        ProcessReplacements(fileNameReplacements),
+        ProcessReplacements(textReplacements)
     );
 
     return;
@@ -50,29 +50,29 @@ await Parser.Default.ParseArguments<CommandLineOptions>(args)
         CleanUp(generateToDir);
         CopyDirectory(sourceDir, generateToDir, recursive: true, ignoreDirs);
 
-        List<string> commonReplacers = options.CommonReplacers;
-        IEnumerable<string> dirNameReplacers = commonReplacers
-            .Concat(options.DirNameReplacers);
+        List<string> commonReplacements = options.CommonReplacements;
+        IEnumerable<string> dirNameReplacements = commonReplacements
+            .Concat(options.DirNameReplacements);
         
-        ReplaceDirName(generateToDir, ToReplacerObjects(dirNameReplacers));
+        ReplaceDirName(generateToDir, ToReplacementObjects(dirNameReplacements));
 
-        IEnumerable<string> fileNameReplacers = commonReplacers
-            .Concat(options.FileNameReplacers)
+        IEnumerable<string> fileNameReplacements = commonReplacements
+            .Concat(options.FileNameReplacements)
             .Distinct();
         
-        IEnumerable<string> textReplacers = commonReplacers
-                     .Concat(options.TextReplacers)
+        IEnumerable<string> textReplacements = commonReplacements
+                     .Concat(options.TextReplacements)
                      .Distinct();
 
         await ReplaceFileNameAndTextAsync(
             generateToDir,
-            ToReplacerObjects(fileNameReplacers),
-            ToReplacerObjects(textReplacers)
+            ToReplacementObjects(fileNameReplacements),
+            ToReplacementObjects(textReplacements)
         );
     });
 return;
 
-void ReplaceDirName(string rootDir, Replacer[] replacers)
+void ReplaceDirName(string rootDir, Replacement[] replacements)
 {
     string[] subDirs = Directory.GetDirectories(rootDir, "*", SearchOption.TopDirectoryOnly);
     List<string> updatedSubDirs = [];
@@ -84,7 +84,7 @@ void ReplaceDirName(string rootDir, Replacer[] replacers)
             continue;
         }
         string updatedDir = dirInfo.FullName;
-        foreach ((string from, string to) in replacers)
+        foreach ((string from, string to) in replacements)
         {
             if (!dirInfo.Name.Contains(from))
             {
@@ -103,13 +103,13 @@ void ReplaceDirName(string rootDir, Replacer[] replacers)
 
     foreach (string subDir in updatedSubDirs)
     {
-        ReplaceDirName(subDir, replacers);
+        ReplaceDirName(subDir, replacements);
     }
 }
 
 async Task ReplaceFileNameAndTextAsync(string rootDir,
-    Replacer[] fileNameReplacers,
-    Replacer[] textReplacers)
+    Replacement[] fileNameReplacements,
+    Replacement[] textReplacements)
 {
     if (ignoreDirs.Contains(rootDir))
     {
@@ -126,9 +126,9 @@ async Task ReplaceFileNameAndTextAsync(string rootDir,
             continue;
         }
         
-        await ReplaceTextAsync(filePath, textReplacers);
+        await ReplaceTextAsync(filePath, textReplacements);
 
-        foreach ((string from, string to) in fileNameReplacers)
+        foreach ((string from, string to) in fileNameReplacements)
         {
             if (!fileName.Contains(from))
             {
@@ -146,11 +146,11 @@ async Task ReplaceFileNameAndTextAsync(string rootDir,
 
     foreach (string subDir in subDirs)
     {
-        await ReplaceFileNameAndTextAsync(subDir, fileNameReplacers, textReplacers);
+        await ReplaceFileNameAndTextAsync(subDir, fileNameReplacements, textReplacements);
     }
 }
 
-async Task ReplaceTextAsync(string filePath, Replacer[] replacers)
+async Task ReplaceTextAsync(string filePath, Replacement[] replacements)
 {
     string fileName = Path.GetFileName(filePath);
     if (ignoreTextReplaceFiles.Contains(fileName))
@@ -159,7 +159,7 @@ async Task ReplaceTextAsync(string filePath, Replacer[] replacers)
     }
     
     string allText = await File.ReadAllTextAsync(filePath);
-    foreach ((string from, string to) in replacers)
+    foreach ((string from, string to) in replacements)
     {
         allText = allText.Replace(from, to);
     }
@@ -167,18 +167,18 @@ async Task ReplaceTextAsync(string filePath, Replacer[] replacers)
     await File.WriteAllTextAsync(filePath, allText);
 }
 
-static Replacer ParseReplacer(string replacerText)
+static Replacement ParseReplacement(string replacementText)
 {
     var splitOptions = StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries;
-    string[] parts = replacerText.Split('=', splitOptions);
-    return new Replacer(parts[0], parts[1]);
+    string[] parts = replacementText.Split('=', splitOptions);
+    return new Replacement(parts[0], parts[1]);
 }
 
-static Replacer[] ToReplacerObjects(IEnumerable<string> replacers) =>
-    ProcessReplacers(replacers.Select(ParseReplacer));
+static Replacement[] ToReplacementObjects(IEnumerable<string> replacements) =>
+    ProcessReplacements(replacements.Select(ParseReplacement));
 
-static Replacer[] ProcessReplacers(IEnumerable<Replacer> replacers) =>
-    [..replacers.DistinctBy(x => x.From).OrderByDescending(x => x.From)];
+static Replacement[] ProcessReplacements(IEnumerable<Replacement> replacements) =>
+    [..replacements.DistinctBy(x => x.From).OrderByDescending(x => x.From)];
 
 static void CopyDirectory(string sourceDir, string destinationDir, bool recursive, string[]? ignoreDirs = null)
 {

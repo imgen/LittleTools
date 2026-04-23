@@ -1,7 +1,7 @@
 
 {
   "GenerateToDir": "C:\\Create\\time-up\\src",
-  "CommonReplacers": [
+  "CommonReplacements": [
     {
       "From": "confy.db",
       "To": "time_up.db"
@@ -20,7 +20,7 @@
     }
   ],
 
-  "TextReplacers": [
+  "TextReplacements": [
     {
       "From": "ConfigEndpoints",
       "To": "TimeEndpoints"

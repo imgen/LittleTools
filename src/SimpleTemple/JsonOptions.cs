@@ -6,11 +6,11 @@ public class JsonOptions
 
     public string GenerateToDir { get; set; } = Directory.GetCurrentDirectory();
 
-    public List<Replacer> CommonReplacers { get; set; } = [];
+    public List<Replacement> CommonReplacements { get; set; } = [];
 
-    public List<Replacer> TextReplacers { get; set; } = [];
+    public List<Replacement> TextReplacements { get; set; } = [];
 
-    public List<Replacer> FileNameReplacers { get; set; } = [];
+    public List<Replacement> FileNameReplacements { get; set; } = [];
 
-    public List<Replacer> DirNameReplacers { get; set; } = [];
+    public List<Replacement> DirNameReplacements { get; set; } = [];
 }
