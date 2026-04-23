@@ -1,0 +1,1 @@
+﻿public record Replacer(string From, string To);

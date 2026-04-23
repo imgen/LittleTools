@@ -14,4 +14,10 @@
     <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="10.0.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="temple.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

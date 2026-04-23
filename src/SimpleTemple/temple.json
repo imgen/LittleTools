@@ -1,0 +1,37 @@
+
+{
+  "GenerateToDir": "C:\\Create\\time-up\\src",
+  "CommonReplacers": [
+    {
+      "From": "confy.db",
+      "To": "time_up.db"
+    },
+    {
+      "From": "confy",
+      "To": "time_up"
+    },
+    {
+      "From": "Confy",
+      "To": "TimeUp"
+    },
+    {
+      "From": "ConfigApis",
+      "To": "TimeApis"
+    }
+  ],
+
+  "TextReplacers": [
+    {
+      "From": "ConfigEndpoints",
+      "To": "TimeEndpoints"
+    },
+    {
+      "From": "configApis",
+      "To": "timeApis"
+    },
+    {
+      "From": "\"config\"",
+      "To": "\"time\""
+    }
+  ]
+}

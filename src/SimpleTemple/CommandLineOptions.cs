@@ -2,9 +2,9 @@
 
 namespace SimpleTemple;
 
-public class Options
+public class CommandLineOptions
 {
-    private const string DefaultTemplateSourceDir = @"C:\Create\confy\api";
+    public const string DefaultTemplateSourceDir = @"C:\Create\confy\api";
 
     [Option('s', "source", Required = false, HelpText = "The source directory")]
     public string SourceDir { get; set; } = DefaultTemplateSourceDir;
@@ -13,14 +13,14 @@ public class Options
     public string GenerateToDir { get; set; } = Directory.GetCurrentDirectory();
 
     [Option('c', "common-replacers", Required = false, HelpText = "The common replacers")]
-    public IEnumerable<string> CommonReplacers { get; set; } = [];
+    public List<string> CommonReplacers { get; set; } = [];
 
     [Option('t', "text-replacers", Required = false, HelpText = "The text replacers")]
-    public IEnumerable<string> TextReplacers { get; set; } = [];
+    public List<string> TextReplacers { get; set; } = [];
 
     [Option('f', "file-name-replacers", Required = false, HelpText = "The file replacers")]
-    public IEnumerable<string> FileNameReplacers { get; set; } = [];
+    public List<string> FileNameReplacers { get; set; } = [];
 
     [Option('d', "dir-name-replacers", Required = false, HelpText = "The dir name replacers")]
-    public IEnumerable<string> DirNameReplacers { get; set; } = [];
+    public List<string> DirNameReplacers { get; set; } = [];
 }
