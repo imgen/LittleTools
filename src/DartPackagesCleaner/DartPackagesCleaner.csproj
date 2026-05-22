@@ -9,15 +9,9 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="10.0.8" />
-  </ItemGroup>
 
   <ItemGroup>
-    <None Update="temple.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="10.0.8" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="CreoFileCleaner/CreoFileCleaner.csproj" />
+  <Project Path="DartPackagesCleaner/DartPackagesCleaner.csproj" Id="91ac1332-b9b6-4aa2-a797-d54decadd0ff" />
   <Project Path="GetxPageTemplator/GetxPageTemplator.csproj" />
   <Project Path="NugetPackagesCleaner/NugetPackagesCleaner.csproj" />
   <Project Path="SimpleTemple/SimpleTemple.csproj" />
